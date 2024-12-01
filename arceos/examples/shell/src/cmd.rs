@@ -27,6 +27,8 @@ const CMD_TABLE: &[(&str, CmdHandler)] = &[
     ("pwd", do_pwd),
     ("rm", do_rm),
     ("uname", do_uname),
+    ("rename", do_rename),
+    ("mv", do_mv),
 ];
 
 fn file_type_to_char(ty: FileType) -> char {
@@ -271,7 +273,38 @@ fn do_exit(_args: &str) {
     println!("Bye~");
     std::process::exit(0);
 }
-
+fn do_rename(args: &str) {
+    let mut args = args.split_whitespace();
+    let old_name = args.next();
+    let new_name = args.next();
+    if old_name.is_none() || new_name.is_none() {
+        print_err!("rename", "missing operand");
+        return;
+    }
+    if args.next().is_some() {
+        print_err!("rename", "too many arguments");
+        return;
+    }
+    if let Err(e) = fs::rename(old_name.unwrap(), new_name.unwrap()) {
+        print_err!("rename", e);
+    }
+}
+fn do_mv(args: &str) {
+    let mut args = args.split_whitespace();
+    let src = args.next();
+    let dst = args.next();
+    if src.is_none() || dst.is_none() {
+        print_err!("mv", "missing operand");
+        return;
+    }
+    if args.next().is_some() {
+        print_err!("mv", "too many arguments");
+        return;
+    }
+    if let Err(e) = fs::rename(src.unwrap(), dst.unwrap()) {
+        print_err!("mv", e);
+    }
+}
 pub fn run_cmd(line: &[u8]) {
     let line_str = unsafe { core::str::from_utf8_unchecked(line) };
     let (cmd, args) = split_whitespace(line_str);

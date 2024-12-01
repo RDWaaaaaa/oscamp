@@ -55,7 +55,8 @@ extern crate alloc;
 
 #[cfg(feature = "alloc")]
 #[doc(no_inline)]
-pub use alloc::{boxed, collections, format, string, vec};
+pub use alloc::{boxed, collections as std_collections, format, string, vec};// 暂时把collections换个名字防止冲突
+pub mod collections;// 增加一行
 
 #[doc(no_inline)]
 pub use core::{arch, cell, cmp, hint, marker, mem, ops, ptr, slice, str};
